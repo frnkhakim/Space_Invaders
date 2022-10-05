@@ -1,0 +1,465 @@
+import java.awt.Font;
+import java.awt.Color;
+import java.awt.event.KeyEvent;
+
+public class Game {
+  
+  //displays the points on screen
+  public static void point_display(int point)
+  {
+    StdDraw.setXscale(0,2);
+    StdDraw.setYscale(0,2);
+    Font font = new Font("Verdana", Font.BOLD, 18);
+    String x  = Integer.toString(point);
+    StdDraw.setPenColor(StdDraw.WHITE);
+    StdDraw.setFont(font); 
+    StdDraw.text(0.2,1.8,x,0.0);
+    
+  }
+  
+  
+  
+  //welcoming screen
+   public static void ScreenDisply(){
+     StdDraw.setXscale(0.0, 1.0);
+     StdDraw.setYscale(0.0, 1.0);
+    boolean Space_Bar = false;
+    
+    Font font_1 = new Font("Verdana", Font.BOLD, 40); 
+    Font font_2 = new Font("Verdana", Font.BOLD, 18);
+    String string1 = "Digitata Networks";
+    String string2 = "Press (W) to Shoot";
+    String string3 = "Press (q) or (Q) to quit";
+    String string4 = "Press the space bar to continue";
+    String string5 = "Press (z) or (c) to go left or right and (x) to stop";
+    String string6 = "Press (a)/(d) to rotate left/right and (s) to stop";
+    
+    
+    StdDraw.setPenColor(StdDraw.BLACK);
+    StdDraw.filledSquare(0.5, 0.5, 0.5);
+    
+    StdDraw.setPenColor(StdDraw.WHITE);
+    StdDraw.picture(0.5,0.5,"theme.jpg",1,1);
+    StdDraw.setFont(font_1);  
+    StdDraw.text(0.5,0.8,string1,0.0);
+    
+    StdDraw.setFont(font_2); 
+    
+    StdDraw.text(0.5,0.6,string2,0.0);
+    StdDraw.text(0.5,0.4,string3,0.0);
+    StdDraw.text(0.5,0.2,string4,0.0);
+    StdDraw.text(0.5,0.5,string5,0.0);
+    StdDraw.text(0.5,0.7,string6,0.0);
+    
+    StdDraw.show();
+    
+    while (!Space_Bar){
+      if((StdDraw.isKeyPressed('q') == true)  || (StdDraw.isKeyPressed('Q') == true ))
+        System.exit(0);
+      else if(StdDraw.isKeyPressed(' ') == true){
+        Space_Bar = true;
+        StdDraw.clear(StdDraw.GRAY);
+      }
+    }
+   } 
+   
+   //Game over screen
+   public static void GameOver(int win){
+    
+     MP3 song = new MP3("father.mp3");
+     song.play(); 
+     
+    StdDraw.setXscale(0.0, 1.0);
+    StdDraw.setYscale(0.0, 1.0);
+    
+  
+    
+    boolean Space_Bar = false;
+    
+    Font font_1 = new Font("Verdana", Font.BOLD, 40); 
+    Font font_2 = new Font("Verdana", Font.BOLD, 18);
+    
+    String string1 = "GAME OVER";
+
+       
+    if(win ==1)
+    {
+    string1 = "GAME OVER";
+    }
+    
+    else if(win == 2)
+    { 
+      MP3 win_song = new MP3("win.mp3");
+      win_song.play(); 
+      string1 = "YOU WIN";
+    }
+    
+    
+    String string3 = "Press q or Q to quit";
+    String string4 = "Press the space bar to Restart";
+
+    StdDraw.setPenColor(StdDraw.WHITE);
+    StdDraw.filledSquare(0.5, 0.5, 0.5);
+    
+    
+    //background pics
+    if(win == 2)
+    {
+      StdDraw.picture(0.5,.5,"win.jpg",1,1);
+    }
+    
+    if(win == 1)
+    {
+      StdDraw.picture(.5,.5,"gameover.jpg",1,1);
+    }
+    
+    
+    
+    
+    StdDraw.setPenColor(StdDraw.WHITE);
+    
+    StdDraw.setFont(font_1);
+    StdDraw.text(0.5,0.8,string1,0.0);
+    
+    StdDraw.setFont(font_2);      
+    StdDraw.text(0.5,0.4,string3,0.0);
+    StdDraw.text(0.5,0.2,string4,0.0);
+    
+    StdDraw.show();
+    
+    while (!Space_Bar){
+      if((StdDraw.isKeyPressed('q') == true)  || (StdDraw.isKeyPressed('Q') == true ))
+        System.exit(0);
+      else if(StdDraw.isKeyPressed(' ') == true){
+        Space_Bar = true;
+        StdDraw.clear(StdDraw.GRAY);
+      }     
+    }
+     game();
+   }   
+   
+   public static void game()
+   {
+    
+     StdDraw.setXscale(0,2);
+     StdDraw.setYscale(0,2);
+     
+     
+     //getting the current time
+     long startTime = System.currentTimeMillis();
+     
+  
+     
+     //creation of gun ship for game
+     Move ship = new Move();
+     
+     //create turrent
+     Shooter cannon = new Shooter();
+     
+     //create missiles
+     Missile[] missile = new Missile[100000];//100 missiles created
+      
+     //create minions
+     int N = 20;
+     Minions[] badguy = new Minions[N];
+     Shoot_Minion[] bullet = new Shoot_Minion[50];
+     
+     int shoot_start = 0;
+     
+     //invisible row of minions to lead other minions to bounce of walls 
+     double x = 1;
+     double y = 1.90;
+     for (int i = 0; i < 5; i++)
+     {  
+       badguy[i] = new Minions(x,y,0.080);
+       x+=0.15;
+     }
+     
+     //1st row of minions 
+     x = 1;
+     y = 1.750;
+     for (int i = 5; i < 10; i++)
+     {  
+       badguy[i] = new Minions(x,y,.075);
+       x+=0.15;
+     }
+     
+     //2nd row of minions 
+     x = 1;
+     y = 1.60;
+     for (int i = 10; i < 15; i++)
+     {  
+       badguy[i] = new Minions(x,y,.075);
+       x+=0.15;
+     }
+     
+     //3rd row of minions 
+     x = 1;
+     y = 1.45;
+     for (int i = 15; i < 20; i++)
+     {  
+       badguy[i] = new Minions(x,y,0.075);
+       x+=0.15;
+     }
+     
+     //indicates the number missile being launcehd
+     int missile_count =0;
+     
+     //counts the number of bad guys
+     int badguy_count=0;
+     
+     //takes note of the number of missiles launched
+     int missile_touch = 0;
+     
+     //counts the number of dead bad guys
+     int death = 0;
+     
+     double[] dead = new double[20];
+     
+     //registers the missiles and badguys that should disappear
+     int[] missile_dis = new int[1000]; 
+     int[] badguy_dis = new int[20]; 
+     
+     
+     //missile indicator for readiness
+     int shoot_time = 0;
+     
+     //display pics
+     int display = 0;
+     
+     //rotation indicator
+     int d = 2;
+     
+     while(true) 
+     { 
+      
+       
+       
+       // move the objects
+       ship.move();//move my ship
+       cannon.move_turrent(ship);//move my cannon
+       
+       //to cause turrent to rotate
+       if(StdDraw.isKeyPressed(KeyEvent.VK_A)){
+         d = 1;
+       }
+       
+       if(StdDraw.isKeyPressed(KeyEvent.VK_S)){
+         d = 2;
+       }
+       
+       if(StdDraw.isKeyPressed(KeyEvent.VK_D)){
+         d = 3;
+       }    
+       cannon.angle(d);//rotate turrent
+       
+       //shoot missile  
+       missile_touch = missile_count;
+       
+       //recharge time for next missile is 2 seconds
+       long endTime   = System.currentTimeMillis();
+       double two_secs = (endTime-startTime) % 2000;
+       if(two_secs > 1740)
+       {
+         shoot_time = 0;
+       }
+       
+       if(shoot_time == 0)
+      {
+        if(StdDraw.isKeyPressed(KeyEvent.VK_W)  )
+        { 
+          //sound effect for shot being made
+          MP3 song = new MP3("shot.mp3");
+          song.play();
+           
+           
+          missile[missile_count] = new Missile(ship);
+          missile_count++;//goes on to next missile 
+          
+          //stops the missile launch for recharge
+          shoot_time =  1;         
+        }
+       }
+       
+       //bad guy moving
+       for (int i = 0; i < N; i++) 
+       {
+         badguy[i].move(badguy[0],badguy[4]);
+       }
+       
+       //created random shooting of bad guy bullets
+       if( ((startTime) % 56) == 0)
+       {
+         bullet[badguy_count] =  new Shoot_Minion(badguy[badguy_count]); 
+         badguy_count++;
+       }
+       
+       // draw the objects
+       StdDraw.clear(StdDraw.WHITE);
+       
+       if(display ==0){
+         StdDraw.picture(1,1,"space.jpg",2,2);
+       }
+       
+       if(display ==1){
+         StdDraw.picture(1,1,"invasion.jpg",2,2);
+       }
+       
+       if(display ==2){
+         StdDraw.picture(1,1,"spacefight.jpg",2,2);
+       }
+       
+       if(display ==3){
+         StdDraw.picture(1,1,"board.jpg",2,2);
+       }
+  
+       
+       StdDraw.setPenColor(StdDraw.WHITE);
+       
+       
+//       //the drawing of the bad guy missile launch
+//       for(int i = 5;i < badguy_count;i++)
+//       {
+//         bullet[i].shooting();
+//         bullet[i].draw();
+//       }
+       
+       //the drawing of the missile launch
+       for(int i = 0;i < missile_count;i++)
+       { 
+         //sets the exploded missiles
+         if(missile_dis[i] == 1)
+         {
+           continue;
+         }  
+         //draws the missiles
+         else
+         {
+           missile[i].shooting(cannon);
+           missile[i].draw(cannon);
+         }
+       }
+       
+       //draws ship
+       ship.draw(cannon);
+       
+       //draws my cannon for use
+       cannon.draw();
+       
+       //draws the bad guys
+       for (int i = 5; i < N; i++)
+       {        
+           if(badguy_dis[i] == 1)
+           {
+             continue;
+           }
+           else
+           {
+             badguy[i].draw();
+           } 
+       }
+      
+       //registers contact between missile and badguy
+       for(int i= 0 ;i < missile_touch;i++)
+       {
+         for(int j = 5;j < 20;j++)
+         {
+           //takes the difference of the x anc y positions of the missile and and bad guy
+           //and uses pythagorus to find the distance
+           double x_dif = Math.abs((missile[i].x_position () - badguy[j].x_position()));
+           double y_dif = Math.abs((missile[i].y_position() - badguy[j].y_position()));
+           double square = (x_dif*x_dif) + (y_dif*y_dif);
+           double hypo = Math.sqrt(square); 
+           
+           if((hypo <= 0.085) && (badguy_dis[j] == 0))
+           { 
+             if(missile_dis[i] == 1)
+             {
+               continue; //if missile has already touched then skip tat missile
+             }
+             
+             else
+             {
+             missile_dis[i] = 1;
+             badguy_dis[j] = 1;
+             death++;
+             
+             //explosion sound
+             MP3 song = new MP3("bang.mp3");
+             song.play();
+             
+             
+             
+             }
+           }
+         }
+       }
+       
+       //Game over when any badguy touches ground
+       for(int i = 0;i < 20;i++)
+       {
+         if(badguy[i].y_position() < 0.075)       
+         {
+           GameOver(1);
+         }
+       }
+       
+       //Game over when any badguy touches shooter
+       for(int i = 0;i < 20;i++)
+       {
+         //uses pythagorus theorem
+         double x_dif = ship.x_direction() - badguy[i].x_position();
+         double y_dif = ship.y_direction() - badguy[i].y_position();
+         double square = (x_dif*x_dif) + (y_dif*y_dif);
+         double hypo = Math.sqrt(square); 
+         
+         
+         if ( (hypo < 0.125) && badguy_dis[i] != 1 )      
+         {
+           GameOver(1);
+         }
+       }
+       
+       //the you win screen
+       if(death ==15)
+       {
+         GameOver(2);
+       }
+       
+       //change display
+       if(badguy[17].y_position() == 1.2499999999999998)
+       {
+         display = 1;
+       }
+       
+        //change display
+       if(badguy[17].y_position() == 0.8499999999999996)
+       {
+         display = 2;
+       } 
+
+        //change display
+       if(badguy[17].y_position() == 0.5499999999999997)
+       {
+         display = 3;
+       }       
+       
+       //display the points
+       point_display(death);
+       
+       
+       StdDraw.show(20);    
+     }
+ 
+   }
+   
+  
+   public static void main(String[] args)
+   {
+       MP3 song = new MP3("invaders.mp3");
+       song.play();
+   
+     ScreenDisply();
+     game();
+   }
+}
